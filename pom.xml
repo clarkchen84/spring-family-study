@@ -11,6 +11,7 @@
         <module>helloworld</module>
         <module>jdbc-sample</module>
         <module>mult-datasource</module>
+        <module>druid-demo</module>
     </modules>
     <packaging>pom</packaging>
     <properties>
@@ -37,7 +38,11 @@
                 <version>1.4.200</version>
                 <scope>runtime</scope>
             </dependency>
-
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid-spring-boot-starter</artifactId>
+                <version>1.1.21</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     <build>
