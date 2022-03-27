@@ -1,3 +1,8 @@
+### git 常用命令
+1. git remote set-head origin master 设置远程git仓库的head
+2. git remote add origin git@github.com:*****
+将本地工程挂载到远程仓库 
+
 ### 关于使用maven 打jar 包的命令
 1. 使用 mvn clean install -Dmaven.test.skip
 2. 如果springboot 项目通过上面的命令打包需要注意下面的事项
@@ -54,5 +59,81 @@
             </plugins>
         </build>
         ```
+### Spring boot jdbc
+#### spring boot 为jdbc 做了哪些配置
+1. DataSourceAutoConfiguration
+   * 配置DataSource
+2. DataSourceTransactionManagerAutoConfiguration
+   * 配置DataSourceTransactionManager
+3. JdbcTemplateAutoConfiguration
+   * 配置JdbcTemplate
+#### 数据源的通用配置
+* spring.datasource.url=jdbc:mysql://localhost/test
+* spring.datasource.username=XXXX
+* spring.datasource.password=XXXX
+* spring.datasource.driver-class-name=com.mysql.jdbc.Driver
+#### 初始化内嵌数据库
+* spring.datasource.initialization-mode=embedded|always|never
+* spring.datasource.schema 与spring.datasource.data确定初始化sql文件
+* spring.datasource.platform=hsqldb|h2|oracle|mysql
+#### 多数据源手动配置
+1. 通过primary 配置最优先的Datasource
+2. 手动配置多数据源，排除`DataSourceAutoConfiguration`，
+   `DataSourceTransactionManagerAutoConfiguration`，`JdbcTemplateAutoConfiguration`
+   并配置里面的Datasource
+   ``` java
+   @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class,
+        DataSourceTransactionManagerAutoConfiguration.class, JdbcTemplateAutoConfiguration.class})
+   @Slf4j
+   public class MultiDatasourceBootStrap {
+       public static void main(String[] args) {
+           SpringApplication.run(MultiDatasourceBootStrap.class,args);
+       }
+   
+       @Autowired
+       @Qualifier("fooDataSource")
+       private DataSource foo;
+       @Autowired
+       @Qualifier("barDataSource")
+       private DataSource bar;
+   
+       @Bean
+       @ConfigurationProperties("foo.datasource")
+       public DataSourceProperties fooDataSourceProperties(){
+           return  new DataSourceProperties();
+       }
+       @Bean
+       @ConfigurationProperties("bar.datasource")
+       public DataSourceProperties barDataSourceProperties(){
+           return  new DataSourceProperties();
+       }
+   
+       @Bean
+       public DataSource fooDataSource(@Qualifier("fooDataSourceProperties") DataSourceProperties fooDataSourceProperties){
+   
+           log.info("foo datasource: {}", fooDataSourceProperties.getUrl());
+           return fooDataSourceProperties.initializeDataSourceBuilder().build();
+       }
+   
+       @Bean
+       public DataSource barDataSource(@Qualifier("barDataSourceProperties") DataSourceProperties barDataSourceProperties){
+   
+           log.info("foo datasource: {}", barDataSourceProperties.getUrl());
+           return barDataSourceProperties.initializeDataSourceBuilder().build();
+       }
+   
+       @Bean
+       public PlatformTransactionManager barTxManager(@Qualifier("barDataSource") DataSource barDataSource) {
+           return new DataSourceTransactionManager(barDataSource);
+       }
+   
+       @Bean
+       public PlatformTransactionManager fooTxManager(@Qualifier("fooDataSource")DataSource fooDataSource) {
+           return new DataSourceTransactionManager(fooDataSource);
+       }
+   }
+
+   ```
+
 
 
