@@ -123,12 +123,12 @@
        }
    
        @Bean
-       public PlatformTransactionManager barTxManager(@Qualifier("barDataSource") DataSource barDataSource) {
+       public PlatformTransactionManager barTxManager(@Qualifier("barDataSource") DataSource barDataSource) 		 {
            return new DataSourceTransactionManager(barDataSource);
        }
    
        @Bean
-       public PlatformTransactionManager fooTxManager(@Qualifier("fooDataSource")DataSource fooDataSource) {
+       public PlatformTransactionManager fooTxManager(@Qualifier("fooDataSource")DataSource fooDataSource) 		{
            return new DataSourceTransactionManager(fooDataSource);
        }
    }
@@ -136,4 +136,90 @@
    ```
 
 
+
+#### spring JdbcTemplate 的基本操作
+
+* query
+
+  ``` java
+  List<Foo> fooList = jdbcTemplate.query("SELECT * FROM FOO ", new RowMapper<Foo>() {
+    @Override
+    public Foo mapRow(ResultSet rs, int rowNum) throws SQLException {
+      return Foo.builder().id(rs.getLong(1)).bar(rs.getString(2)).build();
+    }
+  });
+  
+  list.forEach(foo -> log.info("foo :{}" , foo));
+  ```
+
+  
+
+* queryForList
+
+  ``` java
+  List<String> list = jdbcTemplate.queryForList("SELECT BAR FROM FOO", String.class);
+  ```
+
+* queryForObject
+
+  ```java
+  jdbcTemplate.queryForObject("SELECT COUNT(*) FROM FOO ",Long.class)
+  ```
+
+* update(可以实现插入删除修改 )
+
+  ``` java
+  INSERT INTO FOO (BAR) VALUES ('aaa');
+  ```
+
+* execute
+
+  ```java
+  @Autowired
+  private SimpleJdbcInsert simpleJdbcInsert;
+  @Bean
+  @Autowired
+  public SimpleJdbcInsert simpleJdbcInsert(JdbcTemplate jdbcTemplate){
+    return new SimpleJdbcInsert(jdbcTemplate).withTableName("FOO").usingGeneratedKeyColumns("ID");
+  }
+  
+  HashMap<String,String> map = new HashMap<>();
+  map.put("bar", "d");
+  Number id = simpleJdbcInsert.executeAndReturnKey(map);
+  ```
+
+* batchUpdate
+
+  ```java
+  jdbcTemplate.batchUpdate("INSERT INTO FOO (BAR) VALUES (?)", new BatchPreparedStatementSetter(){
+  
+    @Override
+    public void setValues(PreparedStatement ps, int i) throws SQLException {
+      ps.setString(1, "b-" + i);
+    }
+  
+    @Override
+    public int getBatchSize() {
+      return 2;
+    }
+  });
+  ```
+
+  
+
+### 具名JdbcTemplate（NamedParameterJdbcTemplate）
+
+``` java
+@Bean
+@Autowired
+public NamedParameterJdbcTemplate namedParameterJdbcTemplate(DataSource dataSource){
+  return new NamedParameterJdbcTemplate(dataSource);
+}
+
+List<Foo> fooList =new ArrayList<>();
+fooList.add(Foo.builder().bar("b-100").build());
+fooList.add(Foo.builder().bar("b-101").build());
+namedParameterJdbcTemplate.batchUpdate("INSERT INTO FOO (BAR) VALUES (:bar)", SqlParameterSourceUtils.createBatch(fooList));
+
+```
 

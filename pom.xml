@@ -12,6 +12,7 @@
         <module>jdbc-sample</module>
         <module>mult-datasource</module>
         <module>druid-demo</module>
+        <module>jdbctemplate-demo</module>
     </modules>
     <packaging>pom</packaging>
     <properties>
