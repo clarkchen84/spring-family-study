@@ -1,0 +1,1 @@
+create table FOO (id int identity, bar varchar(64));
