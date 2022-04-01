@@ -548,3 +548,60 @@ namedParameterJdbcTemplate.batchUpdate("INSERT INTO FOO (BAR) VALUES (:bar)", Sq
 6. 关系
     1. @OneToOne, @OneToMany , @ManyToOne ,@ManyToMany
     2. @OrderBy
+``` java
+@Table(name = "T_MENU")
+@Builder
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Coffee implements Serializable {
+    @Id
+    @GeneratedValue
+    private Long id;
+
+    private String name;
+    @Column
+    @Type(type = "org.jadira.usertype.moneyandcurrency.joda.PersistentMoneyAmount",
+        parameters = {@org.hibernate.annotations.Parameter(name="currencyCode",value="CNY")})
+    private Money price;
+
+    @Column(updatable = false)
+    private Date createDateTime;
+
+    @UpdateTimestamp
+    private Date updateDateTime;
+}
+
+@Entity
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "T_ORDER")
+public class CoffeeOrder {
+    @Id
+    @GeneratedValue
+    private Long id;
+
+    private String customer;
+    @ManyToMany
+    @JoinTable(name = "T_ORDER_COFFEE")
+    private List<Coffee> item;
+
+    @Column(nullable = false)
+    private Integer state;
+
+    @Column(updatable = false)
+    private Date createDateTime;
+
+    @UpdateTimestamp
+    private Date updateDateTime;
+
+
+}
+```
+``` properties
+spring.jpa.hibernate.ddl-auto=create-drop
+spring.jpa.properties.hibernate.show_sql=true
+spring.jpa.properties.hibernate.format_sql=true
+```
