@@ -515,8 +515,36 @@ namedParameterJdbcTemplate.batchUpdate("INSERT INTO FOO (BAR) VALUES (:bar)", Sq
 1. TransactionTemplate 
    * TransactionCallBack
    * TransactionCallBackWithOutResult
+   ``` java
+     transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+        @Override
+        protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+            jdbcTemplate.execute("insert into foo(bar) values ('aaa')");
+        }
+    });
+   ```
 2. PlatformTransactionManager
    * 可以传入TransactionDefinition进行定义
 
 ### 基于注解的事物
 1. @EnableTransactionManager
+2. 在需要事物处理的地方追加@Transacitonal
+### 基于xml的事物
+<tx:annotation-driven>
+### spring 同过SQLErrorCodeSqlExceptionTranslator 解析错误妈
+1. ErrorCode的定义
+    org/springframework/jdbc/support/sql-error-codes.xml
+2. 在classpath下创建自己的sql-error-codes.xml 可以实现自定一的sqlcode
+### 常用的JPA注解
+1. @Entity：注明这个类是一个实体类
+2. @MappedSupperClass: 由多个实体类，多个实体类公用一个父类 ，在父类标注一个MappedSupperClass 
+3. @Table注解， 将Table和实体类关联起来
+4. @Id 主键
+    * @GeneratedValue(strategy,generate)
+    * @SequenceGenerator(name, sequenceName)
+5. 映射
+    * Column(name, nullble,length,insertable,updatable)
+    * JoinTable(name),@JoinColumn(name)
+6. 关系
+    1. @OneToOne, @OneToMany , @ManyToOne ,@ManyToMany
+    2. @OrderBy
