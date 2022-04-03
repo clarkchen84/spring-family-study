@@ -1,13 +1,11 @@
 package sizhe.chen.springboot.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -17,15 +15,18 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "T_ORDER")
-public class CoffeeOrder extends BaseEntity {
+@ToString(callSuper = true)
+public class CoffeeOrder extends BaseEntity implements Serializable {
 
 
     private String customer;
     @ManyToMany
     @JoinTable(name = "T_ORDER_COFFEE")
-    private List<Coffee> item;
+    private List<Coffee> items;
 
     @Column(nullable = false)
     private OderState state;
+
+
 
 }

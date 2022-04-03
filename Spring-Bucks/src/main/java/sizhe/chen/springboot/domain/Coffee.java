@@ -1,9 +1,6 @@
 package sizhe.chen.springboot.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -19,7 +16,8 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Coffee extends BaseEntity  {
+@ToString(callSuper = true)
+public class Coffee extends BaseEntity  implements Serializable{
     @Id
     @GeneratedValue
     private Long id;
@@ -28,5 +26,7 @@ public class Coffee extends BaseEntity  {
     @Type(type = "org.jadira.usertype.moneyandcurrency.joda.PersistentMoneyAmount",
             parameters = {@org.hibernate.annotations.Parameter(name = "currencyCode", value = "CNY")})
     private Money price;
+
+
 
 }
