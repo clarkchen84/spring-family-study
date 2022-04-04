@@ -605,3 +605,13 @@ spring.jpa.hibernate.ddl-auto=create-drop
 spring.jpa.properties.hibernate.show_sql=true
 spring.jpa.properties.hibernate.format_sql=true
 ```
+#### Repository Bean 如何创建
+* JapRepsitoriesRegisitory
+    * 激活了@EnableJpaRepositories
+    * 返回了JpaRepositoryConfigExtention
+* RepositoryBeanDefinitionRegistaSupport.registorBeanDefinition
+    * 注册RegistoryBean（类型是JpaRepositoryFactoryBean）
+* RepositoryBeanDefinitionRegistaSupport.getRepositoryConfigurations
+    * 取得Repository的Bean的配置
+* JpaRepositoryFactory.getTargetRepository
+    * 创建Repository

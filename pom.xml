@@ -16,6 +16,7 @@
         <module>programic-transactin-demo</module>
         <module>declare-transaction-demo</module>
         <module>Spring-Bucks</module>
+        <module>mybatis-demo</module>
     </modules>
     <packaging>pom</packaging>
     <properties>
@@ -56,6 +57,11 @@
                 <groupId>org.jadira.usertype</groupId>
                 <artifactId>usertype.core</artifactId>
                 <version>7.0.0.CR1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mybatis.spring.boot</groupId>
+                <artifactId>mybatis-spring-boot-starter</artifactId>
+                <version>2.1.3</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
