@@ -615,3 +615,54 @@ spring.jpa.properties.hibernate.format_sql=true
     * 取得Repository的Bean的配置
 * JpaRepositoryFactory.getTargetRepository
     * 创建Repository
+### Mybatis generator
+java -jar mybatis-generator-core-xxxx.jar -configFile generatorConfig.xml
+
+#### maven plugin(mybatis-maven-generator-plugin)
+* mvn maven-generator:generate
+* ${baseDir}/src/main/resources/generatorConfig.xml
+``` xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+    <context id="H2Tables" targetRuntime="MyBatis3">
+        <plugin type="org.mybatis.generator.plugins.FluentBuilderMethodsPlugin" />
+        <plugin type="org.mybatis.generator.plugins.ToStringPlugin" />
+        <plugin type="org.mybatis.generator.plugins.SerializablePlugin" />
+        <plugin type="org.mybatis.generator.plugins.RowBoundsPlugin" />
+
+        <jdbcConnection driverClass="org.h2.Driver"
+                        connectionURL="jdbc:h2:mem:testdb"
+                        userId="sa"
+                        password="">
+        </jdbcConnection>
+
+        <javaModelGenerator targetPackage="sizhe.chen.spring.data.mybatis.demo.model"
+                            targetProject="./src/main/java">
+            <property name="enableSubPackages" value="true" />
+            <property name="trimStrings" value="true" />
+        </javaModelGenerator>
+
+        <sqlMapGenerator targetPackage="sizhe.chen.spring.data.mybatis.demo.mapper"
+                         targetProject="./src/main/java">
+            <property name="enableSubPackages" value="true" />
+        </sqlMapGenerator>
+
+        <javaClientGenerator type="MIXEDMAPPER"
+                             targetPackage="sizhe.chen.spring.data.mybatis.demo.mapper"
+                             targetProject="./src/main/java">
+            <property name="enableSubPackages" value="true" />
+        </javaClientGenerator>
+
+        <table tableName="t_coffee" domainObjectName="Coffee" >
+            <generatedKey column="id" sqlStatement="CALL IDENTITY()" identity="true" />
+            <columnOverride column="price" javaType="org.joda.money.Money" jdbcType="BIGINT"
+                            typeHandler="sizhe.chen.spring.data.mybatis.demo.handler.MoneyTypeHandler"/>
+        </table>
+    </context>
+</generatorConfiguration>
+//http://www.mybatis.org/generator/configreference/generatedKey.html
+```
