@@ -715,3 +715,50 @@ spring.datasource.password=root
         List<Coffee> list = coffeeMapper.findAllWithParams(2, 3);
         PageInfo page = new PageInfo(list);
     ```
+### Docker
+#### Docker 的基本命令
+1. 镜像相关
+    * docker pull <image>
+    * docker search <image>
+2. 容器相关
+    * docker run
+    * docker start / stop 容器名
+    * docker ps <容器名>
+    * docker logs <容器名 >
+3. docker run [options] image [command] [arg .... ]
+    * 选项说明
+        * -d 后台运行
+        * -e 设置环境变量
+        * --expose /-p 宿主端口:容器端口
+        * --name,指定容器名
+        * --link 连接不同容器
+        * -v 宿主目录：容器目录 挂载磁盘卷
+#### docker 的镜像配置
+1. dockerhub
+    * https://hub.docker.com
+2. 官方镜像
+    * https://www.docker-cn.com/registory-mirror
+    * https://www.docker-cn.com/get-docker
+3. 阿里云镜像
+    * https://dev.aliyun.com
+#### docker 设置镜像代理
+``` json
+{
+  "experimental": false,
+  "features": {
+    "buildkit": true
+  },
+  "registry-mirrors": [
+    "https://docker.mirrors.ustc.edu.cn",
+    "https://registry.docker-cn.com",
+    "http://hub-mirror.c.163.com"
+  ]
+}
+```
+#### docker mongo
+1. docker pull mongo
+2. docker run --name mongo -p 27017:27017 -v ~/docker-data/mongo:/data/db -e MONGO_INITDB_ROOT_USERNAME=admin  -e MONGO_INITDB_ROOT_PASSWORD=admin -d mongo 
+3. 登陆到MogonDb 容器中
+    * docker exec -it mongo bash
+4. 通过shell连接mongodb
+    * mongo -u admin -p admin
