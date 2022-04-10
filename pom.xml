@@ -18,6 +18,7 @@
         <module>Spring-Bucks</module>
         <module>mybatis-demo</module>
         <module>mybatis-generator</module>
+        <module>mybatis-pagehelper-demo</module>
     </modules>
     <packaging>pom</packaging>
     <properties>
@@ -37,6 +38,11 @@
 <!--                <scope>import</scope>-->
 <!--                <version>2.4.4</version>-->
 <!--            </dependency>-->
+            <dependency>
+                <groupId>com.github.pagehelper</groupId>
+                <artifactId>pagehelper-spring-boot-starter</artifactId>
+                <version>1.2.13</version>
+            </dependency>
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>

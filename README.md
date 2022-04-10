@@ -634,35 +634,84 @@ java -jar mybatis-generator-core-xxxx.jar -configFile generatorConfig.xml
         <plugin type="org.mybatis.generator.plugins.SerializablePlugin" />
         <plugin type="org.mybatis.generator.plugins.RowBoundsPlugin" />
 
-        <jdbcConnection driverClass="org.h2.Driver"
-                        connectionURL="jdbc:h2:mem:testdb"
-                        userId="sa"
-                        password="">
+        <jdbcConnection driverClass="com.mysql.cj.jdbc.Driver"
+                        connectionURL="jdbc:mysql://localhost:3306/springbucks?useSSL=false"
+                        userId="spring"
+                        password="root">
         </jdbcConnection>
 
-        <javaModelGenerator targetPackage="sizhe.chen.spring.data.mybatis.demo.model"
-                            targetProject="./src/main/java">
+        <javaModelGenerator targetPackage="sizhe.chen.mybatis.model"
+                            targetProject="./mybatis-generator/src/main/java">
             <property name="enableSubPackages" value="true" />
             <property name="trimStrings" value="true" />
         </javaModelGenerator>
 
-        <sqlMapGenerator targetPackage="sizhe.chen.spring.data.mybatis.demo.mapper"
-                         targetProject="./src/main/java">
+        <sqlMapGenerator targetPackage="sizhe.chen.mybatis.mapper"
+                         targetProject="./mybatis-generator/src/main/java">
             <property name="enableSubPackages" value="true" />
         </sqlMapGenerator>
 
         <javaClientGenerator type="MIXEDMAPPER"
-                             targetPackage="sizhe.chen.spring.data.mybatis.demo.mapper"
-                             targetProject="./src/main/java">
+                             targetPackage="sizhe.chen.mybatis.mapper"
+                             targetProject="./mybatis-generator/src/main/java">
             <property name="enableSubPackages" value="true" />
         </javaClientGenerator>
 
         <table tableName="t_coffee" domainObjectName="Coffee" >
-            <generatedKey column="id" sqlStatement="CALL IDENTITY()" identity="true" />
+            <generatedKey column="id" sqlStatement="SELECT LAST_INSERT_ID()" identity="true" />
             <columnOverride column="price" javaType="org.joda.money.Money" jdbcType="BIGINT"
-                            typeHandler="MoneyTypeHandler"/>
+                            typeHandler="sizhe.chen.mybatis.handler.MoneyTypeHandler"/>
         </table>
     </context>
 </generatorConfiguration>
-//http://www.mybatis.org/generator/configreference/generatedKey.html
 ```
+``` properties
+mybatis.type-aliases-package=sizhe.chen.mybatis.model
+mybatis.type-handlers-package=sizhe.chen.mybatis.handler
+mybatis.configuration.map-underscore-to-camel-case=true
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.datasource.url=jdbc:mysql://localhost:3306/springbucks?useSSL=false
+spring.datasource.username=spring
+spring.datasource.password=root
+```
+#### mage helper 使用的基本方法
+1. maven依赖
+    ``` xml
+    <dependency>
+        <groupId>com.github.pagehelper</groupId>
+        <artifactId>pagehelper-spring-boot-starter</artifactId>
+    </dependency> 
+   ```
+2. mapper的做成方法
+   ``` Java
+    @Mapper
+    public interface CoffeeMapper {
+    @Select("select * from t_coffee order by id")
+    List<Coffee> findAllWithRowBounds(RowBounds rowBounds);
+    
+        @Select("select * from t_coffee order by id")
+        List<Coffee> findAllWithParams(@Param("pageNum") int pageNum,
+                                          @Param("pageSize") int pageSize);
+    }
+   ```
+3. 配置
+   ```  properties
+    mybatis.type-handlers-package=sizhe.chen.mybatis.handler
+    mybatis.configuration.map-underscore-to-camel-case=true
+    
+    pagehelper.offset-as-page-num=true
+    pagehelper.reasonable=true
+    pagehelper.page-size-zero=true
+    pagehelper.support-methods-arguments=true
+    ```
+4. 调用
+    ``` Java
+        // 使用RowBounds的方式， 没有页信息
+        coffeeMapper.findAllWithRowBounds(new RowBounds(1, 0))
+                .forEach(c -> log.info("Page(1) Coffee {}", c));
+        // 使用pageHelper的方式，可以携带页信息
+        coffeeMapper.findAllWithParams(1, 3)
+                .forEach(c -> log.info("Page(1) Coffee {}", c));
+        List<Coffee> list = coffeeMapper.findAllWithParams(2, 3);
+        PageInfo page = new PageInfo(list);
+    ```
