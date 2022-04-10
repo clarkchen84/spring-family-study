@@ -660,7 +660,7 @@ java -jar mybatis-generator-core-xxxx.jar -configFile generatorConfig.xml
         <table tableName="t_coffee" domainObjectName="Coffee" >
             <generatedKey column="id" sqlStatement="CALL IDENTITY()" identity="true" />
             <columnOverride column="price" javaType="org.joda.money.Money" jdbcType="BIGINT"
-                            typeHandler="sizhe.chen.spring.data.mybatis.demo.handler.MoneyTypeHandler"/>
+                            typeHandler="MoneyTypeHandler"/>
         </table>
     </context>
 </generatorConfiguration>

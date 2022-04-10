@@ -16,6 +16,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import sizhe.chen.mybatis.mapper.CoffeeMapper;
 import sizhe.chen.mybatis.model.Coffee;
 import sizhe.chen.mybatis.model.CoffeeExample;
+//import sizhe.chen.data.mybatis.mapper.CoffeeMapper;
+//import sizhe.chen.data.mybatis.model.Coffee;
+//import sizhe.chen.data.mybatis.model.CoffeeExample;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -34,7 +37,7 @@ public class MybatisGeneratorDemoApplication implements ApplicationRunner {
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
-		//generateArtifacts();
+//		generateArtifacts();
 		playWithArtifacts();
 	}
 
