@@ -786,6 +786,12 @@ spring.datasource.password=root
        }
       )   
       ```
+   3. 查看数据
+      ``` 
+         show collecitons;
+         db.coffee.find();
+         db.coffee.remove({"name":"espresso"})
+   4. ```
 #### 搭建一个简单的MongoDb工程
 1. 配置application.properties
    ``` java
@@ -849,4 +855,43 @@ spring.datasource.password=root
    private Date createTime;
    private Date updateTime;
    }
+   ```
+#### Spring data mongodb repository
+1. 启动
+   1. @EnableMongoRepositories
+2. 对应接口
+   * MongoRepository<T,ID>
+      ``` java 
+       public interface CoffeeRepository extends MongoRepository<Coffee,String> {
+
+           List<Coffee> findByName(String name);
+       }
+      ```
+   * PagingAndSortingRepository<T,ID>
+   * CurdRepository<T,ID>
+3. 使用方法
+   ``` java 
+      Coffee espresso = Coffee.
+                builder().name("espresso").price(Money.of(CurrencyUnit.of("CNY"),20))
+                .createTime(new Date()).updateTime(new Date()).build();
+         Coffee latte = Coffee.
+                builder().name("latte").price(Money.of(CurrencyUnit.of("CNY"),30))
+                .createTime(new Date()).updateTime(new Date()).build();
+
+        coffeeRepository.insert(Arrays.asList(latte,espresso));
+        coffeeRepository.findAll(Sort.by("name")).forEach(
+                c -> log.info("coffee: {}", c)
+        );
+
+        Thread.sleep(1000);
+        latte.setPrice(Money.of(CurrencyUnit.of("CNY"),35));
+        latte.setUpdateTime(new Date());
+        coffeeRepository.save(latte);
+
+        coffeeRepository.insert(Arrays.asList(latte,espresso));
+        coffeeRepository.findByName("latte").forEach(
+                c -> log.info("coffee: {}", c)
+        );
+
+        coffeeRepository.deleteAll();
    ```

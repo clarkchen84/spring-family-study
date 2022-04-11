@@ -20,6 +20,7 @@
         <module>mybatis-generator</module>
         <module>mybatis-pagehelper-demo</module>
         <module>mongodb-demo</module>
+        <module>MogoRepositoryDemo</module>
     </modules>
     <packaging>pom</packaging>
     <properties>
