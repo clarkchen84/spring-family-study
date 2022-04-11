@@ -762,3 +762,91 @@ spring.datasource.password=root
     * docker exec -it mongo bash
 4. 通过shell连接mongodb
     * mongo -u admin -p admin
+#### spring 对MongoDB 的支持
+1. Spring Data MongoDB
+   1. MongoTemplate
+   2. Repository的支持
+2. 注解
+   1. @Document
+   2. @Id
+3. MongoTemplate
+   1. save/remove
+   2. criteral/Query/update
+4. Mongo DB 创建 数据库
+   1. `use springbucks;`
+   2. 创建User
+      ``` json 
+      db.createUser(
+       {
+        user: "springbucks",
+        pwd: "springbucks",
+        roles: [
+          {role: "readWrite",db: "springbucks"}  
+        ]
+       }
+      )   
+      ```
+#### 搭建一个简单的MongoDb工程
+1. 配置application.properties
+   ``` java
+      spring.data.mongodb.uri=mongodb://springbucks:springbucks@localhost:27017/springbucks
+   ```
+2. 对于特殊类型配置converter
+   ``` java 
+   public class MoneyReadConverter implements Converter<Document, Money> {
+    @Override
+    public Money convert(Document source) {
+        Document money = (Document) source.get("money");
+        double amount = Double.parseDouble(money.getString("amount"));
+        String currency = ((Document) money.get("currency")).getString("code");
+        return Money.of(CurrencyUnit.of(currency), amount);
+    }
+   }
+   @Bean
+    public MongoCustomConversions mongoCustomConversions() {
+        return new MongoCustomConversions(Arrays.asList(new MoneyReadConverter()));
+    }
+   ```
+3. MongoDbTemplate 如何使用
+   ``` java 
+      Coffee espresso = Coffee.builder()
+                .name("espresso")
+                .price(Money.of(CurrencyUnit.of("CNY"), 20.0))
+                .createTime(new Date())
+                .updateTime(new Date()).build();
+        Coffee saved = mongoTemplate.save(espresso);
+        log.info("Coffee {}", saved);
+
+        List<Coffee> list = mongoTemplate.find(
+                Query.query(Criteria.where("name").is("espresso")), Coffee.class);
+        log.info("Find {} Coffee", list.size());
+        list.forEach(c -> log.info("Coffee {}", c));
+
+        Thread.sleep(1000); // 为了看更新时间
+        UpdateResult result = mongoTemplate.updateFirst(query(where("name").is("espresso")),
+                new Update().set("price", Money.ofMajor(CurrencyUnit.of("CNY"), 30))
+                        .currentDate("updateTime"),
+                Coffee.class);
+        log.info("Update Result: {}", result.getModifiedCount());
+        Coffee updateOne = mongoTemplate.findById(saved.getId(), Coffee.class);
+        log.info("Update Result: {}", updateOne);
+
+        mongoTemplate.remove(updateOne);
+   
+   ```
+4. 定义Model
+   ``` java 
+   @Document
+   @Data
+   @NoArgsConstructor
+   @AllArgsConstructor
+   @Builder
+   public class Coffee {
+   @Id
+   private String id;
+   private String name;
+   private Money price;
+   private Date createTime;
+   private Date updateTime;
+   }
+   ```
