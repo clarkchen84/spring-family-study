@@ -21,6 +21,7 @@
         <module>mybatis-pagehelper-demo</module>
         <module>mongodb-demo</module>
         <module>MogoRepositoryDemo</module>
+        <module>jedis-demo</module>
     </modules>
     <packaging>pom</packaging>
     <properties>
@@ -85,6 +86,11 @@
                 <groupId>org.mybatis.generator</groupId>
                 <artifactId>mybatis-generator-core</artifactId>
                 <version>1.4.0</version>
+            </dependency>
+            <dependency>
+                <groupId>redis.clients</groupId>
+                <artifactId>jedis</artifactId>
+                <version>3.4.0</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

@@ -895,3 +895,61 @@ spring.datasource.password=root
 
         coffeeRepository.deleteAll();
    ```
+### Redis
+Redis 是一款开源的内存KV存储，支持多种数据结构
+#### Spring 对Redis 的支持
+* Spring Data Redis
+  * 支持的客户端 jedis/lettuce
+  * RedisTemplate
+  * Repository 支持
+
+#### jedis客户端的简单使用
+* jedis 不是线程安全的。
+* 通过JedisPool获得jedis实例
+* 直接使用jedis中的方法
+#### 通过Docker启动Redis
+1. 官方指引：https://hub.docker.com/_redis
+2. 获取镜像： `docker pull redis`
+3. 启动reids
+   ```
+   docker run --name redis -d -p 6379:6379 redis
+   ```
+4. 查看进程 `docker ps -a`
+#### spring jedis 工程
+1. 配置application.properties
+   ```  properties
+   redis.host=localhost
+   redis.maxTotal=5
+   redis.maxIdle=5
+   redis.testOnBorrow=true
+   ```
+2. 引入Jedis 的java 配置
+   ```java 
+   @Bean
+    @ConfigurationProperties("redis")
+    public  JedisPoolConfig jedisPoolConfig(){
+        return  new JedisPoolConfig();
+    }
+    @Bean(destroyMethod = "close")
+    public JedisPool jedisPool(@Qualifier("jedisPoolConfig") JedisPoolConfig jedisPoolConfig
+            ,@Value("${redis.host}") String host){
+        return new JedisPool(jedisPoolConfig,host);
+    }
+   ```
+3. jedis 的基本用法
+   ``` java 
+   try (Jedis jedis = jedisPool.getResource()) {
+			coffeeService.findAllCoffee().forEach(c -> {
+				jedis.hset("springbucks-menu",
+						c.getName(),
+						Long.toString(c.getPrice().getAmountMinorLong()));
+			});
+
+			Map<String, String> menu = jedis.hgetAll("springbucks-menu");
+			log.info("Menu: {}", menu);
+
+			String price = jedis.hget("springbucks-menu", "espresso");
+			log.info("espresso - {}",
+					Money.ofMinor(CurrencyUnit.of("CNY"), Long.parseLong(price)));
+		}    
+   ```
