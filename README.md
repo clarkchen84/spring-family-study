@@ -59,6 +59,7 @@
             </plugins>
         </build>
         ```
+3. maven 手动 下载 source 文件mvn dependency:resolve -Dclassifier=sources
 ### Spring boot jdbc
 #### spring boot 为jdbc 做了哪些配置
 1. DataSourceAutoConfiguration
@@ -953,3 +954,24 @@ Redis 是一款开源的内存KV存储，支持多种数据结构
 					Money.ofMinor(CurrencyUnit.of("CNY"), Long.parseLong(price)));
 		}    
    ```
+#### redis 的部署
+1. redis的哨兵模式
+   1. Redis 的Sentinel（哨兵）是redis的一种高可用方式
+      * 监控,通知,自动故障转移，服务发现
+      ```
+                     +------+
+                     ｜ M1  |
+                     ｜ S1  |
+                     +------+
+                         |
+        +------+         |        +------+ 
+        ｜ R2  |         |        ｜ R3   | 
+        ｜ S2  | --------+--------｜ S3   |
+        +------+                  +------+
+   2. Jedis 通过JedisSentinelPool 实现哨兵模式
+2. redis的集群模式
+   1. RedisCluster 数据自动分片（分成16384个Hash pot）
+   2. 在一部分节点失效时有一定的可用性
+   3. JedisCluster
+      1. Jedis只从Master取数据，如果想要自动读写分离需要定制
+      2. 
