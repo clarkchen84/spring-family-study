@@ -1,80 +1,80 @@
 ### git 常用命令
 1. git remote set-head origin master 设置远程git仓库的head
-2. git remote add origin git@github.com:*****
-将本地工程挂载到远程仓库 
+   1. git remote add origin git@github.com:*****
+   将本地工程挂载到远程仓库 
 
 ### 关于使用maven 打jar 包的命令
 1. 使用 mvn clean install -Dmaven.test.skip
-2. 如果springboot 项目通过上面的命令打包需要注意下面的事项
-    * 如果项目是通过 parent的形式追加springboot的依赖， 那么需要追加下面的build才能让打处的jar包通过 java -jar 命令执行
-        ``` xml
-        <parent>
-            <artifactId>spring-boot-starter-parent</artifactId>
-            <groupId>org.springframework.boot</groupId>
-            <version>2.4.4</version>
-        </parent>
-        ```
-        ``` xml
-        <build>
-            <plugins>
-                <plugin>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-maven-plugin</artifactId>
+   1. 如果springboot 项目通过上面的命令打包需要注意下面的事项
+       * 如果项目是通过 parent的形式追加springboot的依赖， 那么需要追加下面的build才能让打处的jar包通过 java -jar 命令执行
+           ``` xml
+           <parent>
+               <artifactId>spring-boot-starter-parent</artifactId>
+               <groupId>org.springframework.boot</groupId>
+               <version>2.4.4</version>
+           </parent>
+           ```
+           ``` xml
+           <build>
+               <plugins>
+                   <plugin>
+                       <groupId>org.springframework.boot</groupId>
+                       <artifactId>spring-boot-maven-plugin</artifactId>
     
-                    <version>2.4.4</version>
-                </plugin>
-            </plugins>
-        </build>
-        ```
-    * 如果项目是通过 dependencyManagement的形式追加springboot的依赖， 那么需要追加下面的build才能让打处的jar包通过 java -jar 命令执行
-        ``` xml
-        <dependencyManagement>
-            <dependencies>
-                <dependency>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-dependencies</artifactId>
-                    <type>pom</type>
-                    <scope>import</scope>
-                    <version>2.4.4</version>
-                </dependency>
+                       <version>2.4.4</version>
+                   </plugin>
+               </plugins>
+           </build>
+           ```
+       * 如果项目是通过 dependencyManagement的形式追加springboot的依赖， 那么需要追加下面的build才能让打处的jar包通过 java -jar 命令执行
+           ``` xml
+           <dependencyManagement>
+               <dependencies>
+                   <dependency>
+                       <groupId>org.springframework.boot</groupId>
+                       <artifactId>spring-boot-dependencies</artifactId>
+                       <type>pom</type>
+                       <scope>import</scope>
+                       <version>2.4.4</version>
+                   </dependency>
     
-            </dependencies>
-        </dependencyManagement>
-        ```
-        ``` xml
-        <build>
-            <plugins>
-                <plugin>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-maven-plugin</artifactId>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>repackage</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                    <version>2.4.4</version>
-                </plugin>
-            </plugins>
-        </build>
-        ```
-3. maven 手动 下载 source 文件mvn dependency:resolve -Dclassifier=sources
+               </dependencies>
+           </dependencyManagement>
+           ```
+           ``` xml
+           <build>
+               <plugins>
+                   <plugin>
+                       <groupId>org.springframework.boot</groupId>
+                       <artifactId>spring-boot-maven-plugin</artifactId>
+                       <executions>
+                           <execution>
+                               <goals>
+                                   <goal>repackage</goal>
+                               </goals>
+                           </execution>
+                       </executions>
+                       <version>2.4.4</version>
+                   </plugin>
+               </plugins>
+           </build>
+           ```
+   2. maven 手动 下载 source 文件mvn dependency:resolve -Dclassifier=sources
 ### Spring boot jdbc
 #### spring boot 为jdbc 做了哪些配置
 1. DataSourceAutoConfiguration
    * 配置DataSource
-2. DataSourceTransactionManagerAutoConfiguration
-   * 配置DataSourceTransactionManager
-3. JdbcTemplateAutoConfiguration
-   * 配置JdbcTemplate
+   1. DataSourceTransactionManagerAutoConfiguration
+      * 配置DataSourceTransactionManager
+   2. JdbcTemplateAutoConfiguration
+      * 配置JdbcTemplate
 #### 数据源的通用配置
-* spring.datasource.url=jdbc:mysql://localhost/test
-* spring.datasource.username=XXXX
-* spring.datasource.password=XXXX
-* spring.datasource.driver-class-name=com.mysql.jdbc.Driver
+   * spring.datasource.url=jdbc:mysql://localhost/test
+     * spring.datasource.username=XXXX
+     * spring.datasource.password=XXXX
+     * spring.datasource.driver-class-name=com.mysql.jdbc.Driver
 #### 初始化内嵌数据库
-* spring.datasource.initialization-mode=embedded|always|never
+     * spring.datasource.initialization-mode=embedded|always|never
 * spring.datasource.schema 与spring.datasource.data确定初始化sql文件
 * spring.datasource.platform=hsqldb|h2|oracle|mysql
 #### 多数据源手动配置
@@ -794,69 +794,76 @@ spring.datasource.password=root
          db.coffee.remove({"name":"espresso"})
    4. ```
 #### 搭建一个简单的MongoDb工程
-1. 配置application.properties
-   ``` java
-      spring.data.mongodb.uri=mongodb://springbucks:springbucks@localhost:27017/springbucks
-   ```
-2. 对于特殊类型配置converter
-   ``` java 
-   public class MoneyReadConverter implements Converter<Document, Money> {
-    @Override
-    public Money convert(Document source) {
-        Document money = (Document) source.get("money");
-        double amount = Double.parseDouble(money.getString("amount"));
-        String currency = ((Document) money.get("currency")).getString("code");
-        return Money.of(CurrencyUnit.of(currency), amount);
-    }
-   }
-   @Bean
-    public MongoCustomConversions mongoCustomConversions() {
-        return new MongoCustomConversions(Arrays.asList(new MoneyReadConverter()));
-    }
-   ```
-3. MongoDbTemplate 如何使用
-   ``` java 
-      Coffee espresso = Coffee.builder()
-                .name("espresso")
-                .price(Money.of(CurrencyUnit.of("CNY"), 20.0))
-                .createTime(new Date())
-                .updateTime(new Date()).build();
-        Coffee saved = mongoTemplate.save(espresso);
-        log.info("Coffee {}", saved);
+   1. maven 依赖
+      ``` xml 
+      <dependency>
+          <groupId>org.springframework.boot</groupId>
+               <artifactId>spring-boot-starter-data-mongodb</artifactId>
+      </dependency>
+      ```
+   2. 配置application.properties
+      ``` java
+         spring.data.mongodb.uri=mongodb://springbucks:springbucks@localhost:27017/springbucks
+      ```
+   3. 对于特殊类型配置converter
+      ``` java 
+      public class MoneyReadConverter implements Converter<Document, Money> {
+       @Override
+       public Money convert(Document source) {
+           Document money = (Document) source.get("money");
+           double amount = Double.parseDouble(money.getString("amount"));
+           String currency = ((Document) money.get("currency")).getString("code");
+           return Money.of(CurrencyUnit.of(currency), amount);
+       }
+      }
+      @Bean
+       public MongoCustomConversions mongoCustomConversions() {
+           return new MongoCustomConversions(Arrays.asList(new MoneyReadConverter()));
+       }
+      ```
+   4. MongoDbTemplate 如何使用
+      ``` java 
+         Coffee espresso = Coffee.builder()
+                   .name("espresso")
+                   .price(Money.of(CurrencyUnit.of("CNY"), 20.0))
+                   .createTime(new Date())
+                   .updateTime(new Date()).build();
+           Coffee saved = mongoTemplate.save(espresso);
+           log.info("Coffee {}", saved);
 
-        List<Coffee> list = mongoTemplate.find(
-                Query.query(Criteria.where("name").is("espresso")), Coffee.class);
-        log.info("Find {} Coffee", list.size());
-        list.forEach(c -> log.info("Coffee {}", c));
+           List<Coffee> list = mongoTemplate.find(
+                   Query.query(Criteria.where("name").is("espresso")), Coffee.class);
+           log.info("Find {} Coffee", list.size());
+           list.forEach(c -> log.info("Coffee {}", c));
 
-        Thread.sleep(1000); // 为了看更新时间
-        UpdateResult result = mongoTemplate.updateFirst(query(where("name").is("espresso")),
-                new Update().set("price", Money.ofMajor(CurrencyUnit.of("CNY"), 30))
-                        .currentDate("updateTime"),
-                Coffee.class);
-        log.info("Update Result: {}", result.getModifiedCount());
-        Coffee updateOne = mongoTemplate.findById(saved.getId(), Coffee.class);
-        log.info("Update Result: {}", updateOne);
+           Thread.sleep(1000); // 为了看更新时间
+           UpdateResult result = mongoTemplate.updateFirst(query(where("name").is("espresso")),
+                   new Update().set("price", Money.ofMajor(CurrencyUnit.of("CNY"), 30))
+                           .currentDate("updateTime"),
+                   Coffee.class);
+           log.info("Update Result: {}", result.getModifiedCount());
+           Coffee updateOne = mongoTemplate.findById(saved.getId(), Coffee.class);
+           log.info("Update Result: {}", updateOne);
 
-        mongoTemplate.remove(updateOne);
+           mongoTemplate.remove(updateOne);
    
-   ```
-4. 定义Model
-   ``` java 
-   @Document
-   @Data
-   @NoArgsConstructor
-   @AllArgsConstructor
-   @Builder
-   public class Coffee {
-   @Id
-   private String id;
-   private String name;
-   private Money price;
-   private Date createTime;
-   private Date updateTime;
-   }
-   ```
+      ```
+   5. 定义Model
+      ``` java 
+      @Document
+      @Data
+      @NoArgsConstructor
+      @AllArgsConstructor
+      @Builder
+      public class Coffee {
+      @Id
+      private String id;
+      private String name;
+      private Money price;
+      private Date createTime;
+      private Date updateTime;
+      }
+      ```
 #### Spring data mongodb repository
 1. 启动
    1. @EnableMongoRepositories
@@ -917,14 +924,21 @@ Redis 是一款开源的内存KV存储，支持多种数据结构
    ```
 4. 查看进程 `docker ps -a`
 #### spring jedis 工程
-1. 配置application.properties
+1. maven 依赖
+   ```xml
+   <dependency>
+        <groupId>redis.clients</groupId>
+        <artifactId>jedis</artifactId>
+   </dependency>
+   ```
+2. 配置application.properties
    ```  properties
    redis.host=localhost
    redis.maxTotal=5
    redis.maxIdle=5
    redis.testOnBorrow=true
    ```
-2. 引入Jedis 的java 配置
+3. 引入Jedis 的java 配置
    ```java 
    @Bean
     @ConfigurationProperties("redis")
@@ -937,22 +951,22 @@ Redis 是一款开源的内存KV存储，支持多种数据结构
         return new JedisPool(jedisPoolConfig,host);
     }
    ```
-3. jedis 的基本用法
+4. jedis 的基本用法
    ``` java 
    try (Jedis jedis = jedisPool.getResource()) {
-			coffeeService.findAllCoffee().forEach(c -> {
-				jedis.hset("springbucks-menu",
-						c.getName(),
-						Long.toString(c.getPrice().getAmountMinorLong()));
-			});
+            coffeeService.findAllCoffee().forEach(c -> {
+                jedis.hset("springbucks-menu",
+                        c.getName(),
+                        Long.toString(c.getPrice().getAmountMinorLong()));
+            });
 
-			Map<String, String> menu = jedis.hgetAll("springbucks-menu");
-			log.info("Menu: {}", menu);
+            Map<String, String> menu = jedis.hgetAll("springbucks-menu");
+            log.info("Menu: {}", menu);
 
-			String price = jedis.hget("springbucks-menu", "espresso");
-			log.info("espresso - {}",
-					Money.ofMinor(CurrencyUnit.of("CNY"), Long.parseLong(price)));
-		}    
+            String price = jedis.hget("springbucks-menu", "espresso");
+            log.info("espresso - {}",
+                    Money.ofMinor(CurrencyUnit.of("CNY"), Long.parseLong(price)));
+        }    
    ```
 #### redis 的部署
 1. redis的哨兵模式
@@ -974,4 +988,64 @@ Redis 是一款开源的内存KV存储，支持多种数据结构
    2. 在一部分节点失效时有一定的可用性
    3. JedisCluster
       1. Jedis只从Master取数据，如果想要自动读写分离需要定制
-      2. 
+#### Spring  的缓存抽象
+1. 为不同的缓存提供一个抽象层
+   1. 为Java 方法增加缓存，缓存执行结果
+   2. 支持ConcurrentMap，EhCache，Caffeine,Jcache
+   3. 接口
+      * org.springframework.cache.Cache
+      * org.springframework.cache.CacheManager
+2. 基于注解的缓存
+   * @EnableCache
+     * @Cacheable : 执行方法，如果方法的结果已经在缓存里面了，就直接取，如果没有，就存入缓存
+     * @CacheEvict： 清理缓存
+     * @CachePut： 不管执行结果是否在缓存里， 都将结果放入缓存
+     * @Caching： 可以进行多个操作，多上面的执行功能进行打包
+     * @CacheConfig ：  对缓存做一个设置 ，设置缓存的名字等 
+#### spring 使用java 的内存进行缓存的方法
+1. 开启缓存
+   ``` java 
+   @EnableCaching(proxyTargetClass = true)
+   public class SpringBucksApplication implements ApplicationRunner {
+   ```
+2. 对使用缓存的方法进行配置
+   ``` java 
+   @Slf4j
+   @Service
+   @CacheConfig(cacheNames = "coffee") // 对缓存进行配置，这个例子没有使用，但是在redis作为缓存容器的时候使用了
+   public class CoffeeService {
+   @Autowired
+   private CoffeeRepository coffeeRepository;
+
+    @Cacheable //追加缓存
+    public List<Coffee> findAllCoffee() {
+        return coffeeRepository.findAll();
+    }
+
+    @CacheEvict //清除缓存
+    public void reloadCoffee() {
+    }
+   ```
+#### Spring 使用Redis 的方式进行缓存
+1. 具体使用缓存的注解参考那个上面使用java进行缓存的例子，是一样的。 
+2. maven 依赖
+   ``` xml 
+   <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+   </dependency>
+   <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+   </dependency>
+   ```
+3. Spring boot 配置
+   ``` properties 
+   spring.cache.type=redis
+   spring.cache.cache-names=coffee
+   spring.cache.redis.time-to-live=5000
+   spring.cache.redis.cache-null-values=false
+   
+   spring.redis.host=localhost
+   ```
+   
