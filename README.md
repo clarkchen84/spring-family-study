@@ -1048,4 +1048,82 @@ Redis 是一款开源的内存KV存储，支持多种数据结构
    
    spring.redis.host=localhost
    ```
+####  与Redis 建立连接
+1. 配置连接工厂
+   1. LettuceConnectionFactory 和 JedisConnectionFactory
+   2. RedisStandaloneConfiguration(单例)
+   3. RedisSentinelConfiguration(哨兵)
+   4. RedisClusterConfiguration（集群）
+#### 使用redis 的几种方法
+1. 使用jedis （jedisPool.getResource）
+2. 使用redis 当作缓存容器
+3. 使用RedisTemplate（像数据库一样，相当与jdbcTemplate）【StringRedisTemplate】
+   1. opsForXXXX()
+4. 使用RedisRepository （相当于JPA）
+#### Redis 命令行的简单查询
+1. docker exec -it redis bash
+2. redis-cli
+3. keys * 
+4. HGETALL "XXXXXXXXXXXXXX"
+#### 使用Spring   RedisTemplate 访问
+1. 配置maven 依赖
+   ``` xml
+    <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+    </dependency>
+    <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-pool2</artifactId>
+    </dependency> 
+   ```
+2. spring 配置文件
+    ``` properities
+    spring.redis.host=localhost
+    spring.redis.lettuce.pool.maxActive=5
+    spring.redis.lettuce.pool.maxIdle=5
+   ```
+3. 需要注入的bean
+    ``` java 
+    @Bean
+    public RedisTemplate<String , Coffee> redisTemplate(RedisConnectionFactory redisConnectionFactory){
+        RedisTemplate<String,Coffee> redisTemplate = new RedisTemplate<>();
+        redisTemplate.setConnectionFactory(redisConnectionFactory);
+
+       return redisTemplate;
+    }
+
+    @Bean
+    public LettuceClientConfigurationBuilderCustomizer clientConfigurationBuilderCustomizer(){
+        return  builder -> builder.readFrom(ReadFrom.MASTER);
+    }
+    ```
+4. 基本使用方法
+    ```java 
+    @Autowired
+    private RedisTemplate<String, Coffee> redisTemplate;
+   
+   
+
+    public Optional<Coffee> findOneCoffee(String name) {
+        HashOperations<String, String, Coffee> hashOperations = redisTemplate.opsForHash();
+        if (redisTemplate.hasKey(CACHE) && hashOperations.hasKey(CACHE, name)) {
+            log.info("Get coffee {} from Redis.", name);
+            return Optional.of(hashOperations.get(CACHE, name));
+        }
+        ExampleMatcher matcher = ExampleMatcher.matching()
+                .withMatcher("name", exact().ignoreCase());
+        Optional<Coffee> coffee = coffeeRepository.findOne(
+                Example.of(Coffee.builder().name(name).build(), matcher));
+        log.info("Coffee Found: {}", coffee);
+        if (coffee.isPresent()) {
+            log.info("Put coffee {} to Redis.", name);
+            hashOperations.put(CACHE, name, coffee.get());
+            redisTemplate.expire(CACHE, 1, TimeUnit.MINUTES);
+        }
+        return coffee;
+    } 
+   ```
+
+
    
