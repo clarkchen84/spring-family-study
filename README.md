@@ -1048,4 +1048,22 @@ Redis 是一款开源的内存KV存储，支持多种数据结构
    
    spring.redis.host=localhost
    ```
+####  与Redis 建立连接
+1. 配置连接工厂
+   1. LettuceConnectionFactory 和 JedisConnectionFactory
+   2. RedisStandaloneConfiguration(单例)
+   3. RedisSentinelConfiguration(哨兵)
+   4. RedisClusterConfiguration（集群）
+#### 使用redis 的几种方法
+1. 使用jedis （jedisPool.getResource）
+2. 使用redis 当作缓存容器
+3. 使用RedisTemplate（像数据库一样，相当与jdbcTemplate）【StringRedisTemplate】
+   1. opsForXXXX()
+4. 使用RedisRepository （相当于JPA）
+#### Redis 命令行的简单查询
+1. docker exec -it redis bash
+2. keys * 
+3. HGGETALL "XXXXXXXXXXXXXX"
+
+
    

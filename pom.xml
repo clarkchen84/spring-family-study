@@ -23,6 +23,7 @@
         <module>MogoRepositoryDemo</module>
         <module>jedis-demo</module>
         <module>Cache-demo</module>
+        <module>redis-Template</module>
     </modules>
     <packaging>pom</packaging>
     <properties>
@@ -92,6 +93,11 @@
                 <groupId>redis.clients</groupId>
                 <artifactId>jedis</artifactId>
                 <version>3.4.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-pool2</artifactId>
+                <version>2.6.0</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
