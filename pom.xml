@@ -24,6 +24,7 @@
         <module>jedis-demo</module>
         <module>Cache-demo</module>
         <module>redis-Template</module>
+        <module>redis-repository-demo</module>
     </modules>
     <packaging>pom</packaging>
     <properties>

@@ -12,11 +12,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.convert.RedisCustomConversions;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import sizhe.chen.redis.model.Coffee;
 import sizhe.chen.redis.model.CoffeeOrder;
 import sizhe.chen.redis.service.CoffeeService;
 
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
@@ -27,6 +29,8 @@ import java.util.stream.IntStream;
 public class RedisApplicationBootStrap  implements ApplicationRunner {
     @Autowired
     private CoffeeService coffeeService;
+
+
 
     @Bean
     public RedisTemplate<String , Coffee> redisTemplate(RedisConnectionFactory redisConnectionFactory){
