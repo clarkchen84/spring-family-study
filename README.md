@@ -1230,5 +1230,47 @@ Redis 是一款开源的内存KV存储，支持多种数据结构
             return raw;
         }
     ```
-
-   
+### Project Reactor
+1. Operators 
+    1. Publisher & subscribe
+        * 在调用subscribe()函数之前，不会触发任何处理（类似java 8的
+          stream 操作没有调用终止处理）
+        * Flex[0...n] -onNext(),onError(),onComplete()
+        * Mono[0...1]-onNext(),onError(),onComplete()
+    2. Backpressure（背压）
+        * subscription
+        * onRequest(), onCancel(), onDispose()  
+            1. 下游可以控制上有， 接受多少个参数， 取消，终止 阅等
+2. 线程调度（schedulers）
+    1. immediate()/single()/newSingle()
+    2. elastic()/parallel()/newParallel()
+3. 错误处理
+    1. onError()/onErrorReturn()/onErrorResume()
+    2. doOnError()/doFinally()
+4. 基本例子
+    ``` Java
+    Flux.range(1,6)
+               // .publishOn(Schedulers.elastic())
+                .doOnRequest(n -> log.info("Request {} number",n))
+                .doOnComplete(() -> log.info("Publisher Complete 1"))
+                .publishOn(Schedulers.elastic())
+                .map(n -> {
+                        log.info("publish {},{}",Thread.currentThread(),n);
+                        //异常处理
+                      // return  10/(n-3);
+                        return  n;
+                })
+                .doOnComplete(() -> log.info("Publisher Complete 2"))
+                .subscribeOn(Schedulers.single())
+                .onErrorResume(e -> {
+                    log.error("Exception : {} " ,e.toString());
+                    return Mono.just(-1);
+                })
+                //.onErrorReturn(-1)
+                .subscribe(i -> log.info("Subscribe {} : {}", Thread.currentThread(),i),
+                        e->log.error("errors {} ", e,toString()),
+                        ()-> log.info("Subscriber Complete")
+                        ,s-> s.request(4)
+                        );
+        Thread.sleep(1000);
+    ```
