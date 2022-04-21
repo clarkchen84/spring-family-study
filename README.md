@@ -1062,30 +1062,33 @@ Redis 是一款开源的内存KV存储，支持多种数据结构
 4. 使用RedisRepository （相当于JPA）
 #### Redis 命令行的简单查询
 1. docker exec -it redis bash
-2. redis-cli
-3. keys * 
-4. HGETALL "XXXXXXXXXXXXXX"
-#### 使用Spring   RedisTemplate 访问
-1. 配置maven 依赖
-   ``` xml
+2. keys * 
+3. HGGETALL "XXXXXXXXXXXXXX"
+#### Redis Template 的用发
+1. 加入Maven 依赖
+    ``` xml 
     <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-pool2</artifactId>
     </dependency>
     <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-pool2</artifactId>
-    </dependency> 
-   ```
-2. spring 配置文件
-    ``` properities
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-data-redis</artifactId>
+    </dependency>
+    ```
+2. 配置SpringBoot Rdeis
+    ``` java 
+    spring.jpa.hibernate.ddl-auto=none
+    spring.jpa.properties.hibernate.show_sql=true
+    spring.jpa.properties.hibernate.format_sql=true
+    
     spring.redis.host=localhost
     spring.redis.lettuce.pool.maxActive=5
     spring.redis.lettuce.pool.maxIdle=5
-   ```
-3. 需要注入的bean
-    ``` java 
-    @Bean
+    ```
+3. 配置bean
+    ``` java
+     @Bean
     public RedisTemplate<String , Coffee> redisTemplate(RedisConnectionFactory redisConnectionFactory){
         RedisTemplate<String,Coffee> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(redisConnectionFactory);
@@ -1098,32 +1101,176 @@ Redis 是一款开源的内存KV存储，支持多种数据结构
         return  builder -> builder.readFrom(ReadFrom.MASTER);
     }
     ```
-4. 基本使用方法
-    ```java 
-    @Autowired
-    private RedisTemplate<String, Coffee> redisTemplate;
-   
-   
-
-    public Optional<Coffee> findOneCoffee(String name) {
-        HashOperations<String, String, Coffee> hashOperations = redisTemplate.opsForHash();
-        if (redisTemplate.hasKey(CACHE) && hashOperations.hasKey(CACHE, name)) {
-            log.info("Get coffee {} from Redis.", name);
-            return Optional.of(hashOperations.get(CACHE, name));
+4. RedisTemplate 的使用方法
+    ``` Java
+    //设置缓存名称
+    private static final String CACHE="SpringBucks-coffee";
+    public Optional<Coffee> findOneCoffee(String name){
+        HashOperations<String,String,Coffee> hashOperations
+                = redisTemplate.opsForHash();
+        if(redisTemplate.hasKey(CACHE) && hashOperations.hasKey(CACHE,name)){
+            log.info("Get coffee: {} fromm redis ", name);
+            return Optional.of(hashOperations.get(CACHE,name)) ;
         }
-        ExampleMatcher matcher = ExampleMatcher.matching()
+        ExampleMatcher exampleMatcher = ExampleMatcher.matching()
                 .withMatcher("name", exact().ignoreCase());
-        Optional<Coffee> coffee = coffeeRepository.findOne(
-                Example.of(Coffee.builder().name(name).build(), matcher));
-        log.info("Coffee Found: {}", coffee);
-        if (coffee.isPresent()) {
-            log.info("Put coffee {} to Redis.", name);
-            hashOperations.put(CACHE, name, coffee.get());
-            redisTemplate.expire(CACHE, 1, TimeUnit.MINUTES);
+        Optional<Coffee> coffee = repository.findOne(Example.of(
+                Coffee.builder().name(name).build(),exampleMatcher
+        ));
+        log.info("Coffee find {}" ,coffee);
+
+        if(coffee.isPresent()){
+            log.info("put coffee {} to redis" ,coffee);
+            hashOperations.put(CACHE,name,coffee.get());
+            redisTemplate.expire(CACHE,1, TimeUnit.MINUTES);
         }
         return coffee;
-    } 
+    }
    ```
-
-
-   
+#### Redis Repository
+* 实体注解
+    * @RedisBash
+    * @Id
+    * @Indexed
+* 如何区分不同数据源的Repository
+    * 根据实体的注解
+    * 根据继承的接口类型
+    * 扫描不同的包 
+* RedisRepository 的用法
+    1. 加入Maven 依赖
+        ``` xml 
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-pool2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+        ```
+    2. 配置SpringBoot Rdeis
+        ``` java 
+        spring.jpa.hibernate.ddl-auto=none
+        spring.jpa.properties.hibernate.show_sql=true
+        spring.jpa.properties.hibernate.format_sql=true
+        
+        spring.redis.host=localhost
+        spring.redis.lettuce.pool.maxActive=5
+        spring.redis.lettuce.pool.maxIdle=5
+        ```
+     3. 创建Coverter
+        ``` java 
+        @ReadingConverter
+        public class BytesToMoneyConverter implements Converter<byte[], Money> {
+            @Override
+            public Money convert(byte[] bytes) {
+                String value = new String(bytes, StandardCharsets.UTF_8);
+                return Money.ofMinor(CurrencyUnit.of("CNY"),Long.parseLong(value));
+            }
+        }
+        @WritingConverter
+        public class MoneyToBytesConverter implements Converter<Money,byte[]> {
+            @Override
+            public byte[] convert(Money money) {
+                String value = Long.toString(money.getAmountMinorLong());
+                return value.getBytes(StandardCharsets.UTF_8);
+            }
+        }
+        ```
+    4. 配置Bean
+        ``` java
+          @Bean
+        public RedisCustomConversions redisCustomConversions(){
+            return new RedisCustomConversions(
+                    Arrays.asList(new MoneyToBytesConverter(),new BytesToMoneyConverter()));
+        }
+        @Bean
+        public LettuceClientConfigurationBuilderCustomizer lettuceClientConfigurationBuilderCustomizer(){
+            return clientConfigurationBuilder -> clientConfigurationBuilder.readFrom(ReadFrom.MASTER_PREFERRED);
+        }
+        ```
+   5. 创建Cache使用的Model
+        ``` java 
+        @RedisHash(value = "springbucks-coffee",timeToLive = 60)
+        @Data
+        @NoArgsConstructor
+        @AllArgsConstructor
+        @Builder
+        public class CoffeeCache {
+            @Id
+            private Long id;
+            @Indexed
+            private String name;
+            private Money price;
+        }
+        ```
+  6. 使用方法
+    ``` java
+    public Optional<Coffee> findSimpleCoffeeFromCache(String name) {
+        Optional<CoffeeCache> cached = cacheRepository.findOneByName(name);
+        if (cached.isPresent()) {
+            CoffeeCache coffeeCache = cached.get();
+            Coffee coffee = Coffee.builder()
+                    .name(coffeeCache.getName())
+                    .price(coffeeCache.getPrice())
+                    .build();
+            log.info("Coffee {} found in cache.", coffeeCache);
+            return Optional.of(coffee);
+        } else {
+            Optional<Coffee> raw = findOneCoffee(name);
+            raw.ifPresent(c -> {
+                CoffeeCache coffeeCache = CoffeeCache.builder()
+                        .id(c.getId())
+                        .name(c.getName())
+                        .price(c.getPrice())
+                        .build();
+                log.info("Save Coffee {} to cache.", coffeeCache);
+                cacheRepository.save(coffeeCache);
+            });
+            return raw;
+        }
+    ```
+### Project Reactor
+1. Operators 
+    1. Publisher & subscribe
+        * 在调用subscribe()函数之前，不会触发任何处理（类似java 8的
+          stream 操作没有调用终止处理）
+        * Flex[0...n] -onNext(),onError(),onComplete()
+        * Mono[0...1]-onNext(),onError(),onComplete()
+    2. Backpressure（背压）
+        * subscription
+        * onRequest(), onCancel(), onDispose()  
+            1. 下游可以控制上有， 接受多少个参数， 取消，终止 阅等
+2. 线程调度（schedulers）
+    1. immediate()/single()/newSingle()
+    2. elastic()/parallel()/newParallel()
+3. 错误处理
+    1. onError()/onErrorReturn()/onErrorResume()
+    2. doOnError()/doFinally()
+4. 基本例子
+    ``` Java
+    Flux.range(1,6)
+               // .publishOn(Schedulers.elastic())
+                .doOnRequest(n -> log.info("Request {} number",n))
+                .doOnComplete(() -> log.info("Publisher Complete 1"))
+                .publishOn(Schedulers.elastic())
+                .map(n -> {
+                        log.info("publish {},{}",Thread.currentThread(),n);
+                        //异常处理
+                      // return  10/(n-3);
+                        return  n;
+                })
+                .doOnComplete(() -> log.info("Publisher Complete 2"))
+                .subscribeOn(Schedulers.single())
+                .onErrorResume(e -> {
+                    log.error("Exception : {} " ,e.toString());
+                    return Mono.just(-1);
+                })
+                //.onErrorReturn(-1)
+                .subscribe(i -> log.info("Subscribe {} : {}", Thread.currentThread(),i),
+                        e->log.error("errors {} ", e,toString()),
+                        ()-> log.info("Subscriber Complete")
+                        ,s-> s.request(4)
+                        );
+        Thread.sleep(1000);
+    ```
