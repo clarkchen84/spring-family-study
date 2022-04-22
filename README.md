@@ -789,7 +789,7 @@ spring.datasource.password=root
       ```
    3. 查看数据
       ``` 
-         show collecitons;
+         dshow collecitons;
          db.coffee.find();
          db.coffee.remove({"name":"espresso"})
    4. ```
@@ -1332,5 +1332,87 @@ Redis 是一款开源的内存KV存储，支持多种数据结构
                 );
         log.info("waiting-----");
         count.await();
+    }
+    ```
+#### Reactive Mongo
+1. MongoDB 的官网提供了支持reactive的驱动
+    `mongod-driver-reactivestreams`
+2. Spring Data MongoDB 中的主要支持
+    * ReactiveMongoClientClientFactoryBean
+    * ReactiveMongoDatabaseFactory
+    * ReactiveMongoTemplate
+3. maven 依赖
+    ``` xml
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-data-mongodb-reactive</artifactId>
+    </dependency>
+    ```
+4. 使用方法
+    ``` java 
+    @Autowired
+    private ReactiveMongoTemplate template;
+    private CountDownLatch countDownLatch = new CountDownLatch(2);
+
+    @Bean
+    public MongoCustomConversions mongoCustomConversions(){
+        return new MongoCustomConversions(List.of(new MoneyReadConverter(),new MoneyWriteConverter()));
+    }
+    @Override
+    public void run(ApplicationArguments args) throws Exception {
+        startFromInsertion(() -> {
+            decreaseHighPrice();
+        });
+
+        log.info("after starting ");
+
+        countDownLatch.await();
+    }
+
+    private void startFromInsertion(Runnable runnable){
+        template.insertAll(initCoffee())
+                .publishOn(Schedulers.boundedElastic())
+                .doOnNext(c -> log.info("Next: {} ",c))
+                .doOnComplete(runnable)
+                .doFinally(s -> {
+                    countDownLatch.countDown();
+                    log.info("Finally 1, {} ", s);
+                })
+                .count()
+                .subscribe(c -> log.info("insert {} records", c));
+    }
+
+    private void decreaseHighPrice(){
+        template.updateMulti(
+                Query.query(where("price").gte(3000L)),
+                new Update().inc("price", -500L)
+                .currentDate("updateTime"),Coffee.class)
+                .doFinally(
+                        s -> {
+                            countDownLatch.countDown();
+                            log.info("Finally 2 {}" , s);
+                        }
+                )
+                .subscribe(r -> log.info("Result is {}", r));
+
+
+    }
+
+    private List<Coffee> initCoffee(){
+        Coffee espresso = Coffee.builder()
+                .name("espresso")
+                .price(Money.of(CurrencyUnit.of("CNY"),20.0))
+                .createTime(new Date())
+                .updateTime(new Date())
+                .build();
+        Coffee latte  = Coffee.builder()
+                .name("latte")
+                .price(Money.of(CurrencyUnit.of("CNY"),35.0))
+                .createTime(new Date())
+                .updateTime(new Date())
+                .build();
+
+        return Arrays.asList(espresso,latte);
+
     }
     ```
