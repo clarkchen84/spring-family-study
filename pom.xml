@@ -28,6 +28,7 @@
         <module>simple-reactor-demo</module>
         <module>reactive-redis-demo</module>
         <module>reactive-mongodb-demo</module>
+        <module>performance-aspect-demo</module>
     </modules>
     <packaging>pom</packaging>
     <properties>

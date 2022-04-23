@@ -1416,3 +1416,25 @@ Redis 是一款开源的内存KV存储，支持多种数据结构
 
     }
     ```
+#### 使用Aop访问数据访问层的摘要
+1. Aop的核心概念
+    * Aspect : 切面
+    * Join Point： 连接点，Spring Aop里面总是代表一次方法执行。
+    * advice：通知，在连接点执行的动作
+    * pointCut：切入点，说明如何匹配连接点
+    * Introduction：为现有函数声明额外的方法和属性
+    * Target Object：目标对象
+    * AopProxy：Aop代理对象，可以是动态代理，也可以是CGLIB代理
+    * Weaving：织入，连接切面与目标对象或类型创建代理的过程
+
+2. 常用注解
+    * @EnableAspectJAutoProxy : 开启了对AspectJ的支持，
+    * @Aspect
+    * @PointCut
+    * @Before
+    * @After/@AfterReturning/@AfterThrowing
+    * @Around
+    * @Order
+3. 如何打印SQL 通过Aspect
+    1. 针对HikariCP 需要引入jar P6SPY
+    
