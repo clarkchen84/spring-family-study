@@ -1437,4 +1437,20 @@ Redis 是一款开源的内存KV存储，支持多种数据结构
     * @Order
 3. 如何打印SQL 通过Aspect
     1. 针对HikariCP 需要引入jar P6SPY
+### Spring mvc
+
+#### 认识Spring Mvc
+1. Dispatch Servlet
+    1. Controller
+    2. XXXResolver
+        1. ViewResolver
+        2. HandlerExceptionResolver
+        3. MultipartResolver
+    4. HandlerMapping : 请求的映射处理逻辑 
+2. SpringMvc中的常用注解
+    * @Controller  
+        * @RestController 
+    * @RequestMapping
+        *  @GetMapping @PostMapping @DeleteMapping @PutMapping
+    * @RequestBody @ResponseBody @ResponseStatus
     
