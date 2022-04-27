@@ -1,4 +1,4 @@
-### git 常用命令
+_### git 常用命令
 1. git remote set-head origin master 设置远程git仓库的head
    1. git remote add origin git@github.com:*****
    将本地工程挂载到远程仓库 
@@ -1437,4 +1437,27 @@ Redis 是一款开源的内存KV存储，支持多种数据结构
     * @Order
 3. 如何打印SQL 通过Aspect
     1. 针对HikariCP 需要引入jar P6SPY
+
+### Spring MVC
+### Application Context
+![Application context](./image/applicationContainer.png)
+* Spring 应用上下文
+  * BeanFactory
+    * DefaultListableBeanFactory
+  * ApplicationContext
+    * ClassPathXmlApplicationContext
+    * FileSystemXmlApplicationContext
+    * AnnotationConfigAppliationContext
+  * WebApplicationContext
+* 应用程序上下文的继承层次
+  ![继承层次](./image/ApplicationContextHirachy.png)
+#### spring mvc 的处理流程
+![springmvc 处理流程](./image/spring%20mvc%20flows.png)
+* 绑定一些Attribute
+  * WebApplicationContext/LocalResolver/ThemeResolver
+* 处理Multiply
+  * 如果是将装换为`MultiplyHttpServletRequest`
+* Handler处理
+  * 如果找到对应的handler，执行controller 的前后置处理器
+* 返回model 呈现视图
     
