@@ -31,6 +31,7 @@
         <module>performance-aspect-demo</module>
         <module>simple-controller-demo</module>
         <module>context-hierarchy-demo</module>
+        <module>complex-controller-demo</module>
     </modules>
     <packaging>pom</packaging>
     <properties>
@@ -105,6 +106,11 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-pool2</artifactId>
                 <version>2.6.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.10</version>
             </dependency>
 <!--            <dependency>-->
 <!--                <groupId>io.projectreactor</groupId>-->
