@@ -30,6 +30,9 @@
         <module>reactive-mongodb-demo</module>
         <module>performance-aspect-demo</module>
         <module>simple-controller-demo</module>
+        <module>context-hierarchy-demo</module>
+        <module>complex-controller-demo</module>
+        <module>json-view-demo</module>
     </modules>
     <packaging>pom</packaging>
     <properties>
@@ -104,6 +107,21 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-pool2</artifactId>
                 <version>2.6.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.10</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.datatype</groupId>
+                <artifactId>jackson-datatype-hibernate5</artifactId>
+                <version>2.13.2</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.dataformat</groupId>
+                <artifactId>jackson-dataformat-xml</artifactId>
+                <version>2.13.2</version>
             </dependency>
 <!--            <dependency>-->
 <!--                <groupId>io.projectreactor</groupId>-->

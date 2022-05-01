@@ -1453,4 +1453,48 @@ Redis 是一款开源的内存KV存储，支持多种数据结构
     * @RequestMapping
         *  @GetMapping @PostMapping @DeleteMapping @PutMapping
     * @RequestBody @ResponseBody @ResponseStatus
+### Application Context
+![Application context](./image/applicationContainer.png)
+* Spring 应用上下文
+    * BeanFactory
+        * DefaultListableBeanFactory
+    * ApplicationContext
+        * ClassPathXmlApplicationContext
+        * FileSystemXmlApplicationContext
+        * AnnotationConfigAppliationContext
+    * WebApplicationContext
+* 应用程序上下文的继承层次
+  ![继承层次](./image/ApplicationContextHirachy.png)
+#### spring mvc 的处理流程
+![springmvc 处理流程](./image/spring%20mvc%20flows.png)
+* 绑定一些Attribute
+    * WebApplicationContext/LocalResolver/ThemeResolver
+* 处理Multiply
+    * 如果是将装换为`MultiplyHttpServletRequest`
+* Handler处理
+    * 如果找到对应的handler，执行controller 的前后置处理器
+* 返回model 呈现视图
+#### Spring Mvc 的视图处理机制
+1. ViewResolver 与 View 接口
+    * AbstractCachingViewResolver
+    * UrlBasedViewResolver
+    * FreeMarkerViewResolver
+    * ContentNegotiationViewResolver
+    * InterResourceViewResolver
+2. DispatchServlet中的视图解析逻辑
+    * initStrategy()
+        * initViewResolvers()初始化了对应ViewResolver
+    * doDispatch()
+        * processDispatchResult()
+            * 没有视图的话，尝试RequestToViewNameTransfer
+            * resolveViewName()解析View对象
+3. 使用@ResponseBody的情况
+    1. 在HandlerAdapter.handle()中完成了Response的输出
+        * RequestMappingHandlerAdapter.invokeHandlerMethod()
+            * HandlerMethodReturnValueHandlerComposite.handlerReturnValue()
+                * RequestResponseBodyMethodProcessor.handleReturnValue()
+4. 视图的重定向
+    1. 两种不同的重定向前缀
+        * redirect
+        * forward
     
