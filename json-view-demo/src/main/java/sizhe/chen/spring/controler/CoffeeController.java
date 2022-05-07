@@ -83,7 +83,7 @@ public class CoffeeController {
         return coffeeService.getAllCoffee();
     }
 
-    @GetMapping(path = "/id")
+    @GetMapping(path = "/{id}")
     @ResponseBody
     public Coffee getById(@PathVariable Long id){
 
@@ -93,6 +93,7 @@ public class CoffeeController {
     }
 
     @GetMapping(path = "/", params = "name")
+    @ResponseBody
     public Coffee getByName(@RequestParam String name){
         return coffeeService.getCoffee(name);
     }
