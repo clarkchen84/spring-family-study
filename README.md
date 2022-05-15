@@ -1521,5 +1521,22 @@ Redis 是一款开源的内存KV存储，支持多种数据结构
     * spring.resource.cache.cachecontrol.max-age=时间
     * spring.resource.cache.cachecontrol.no-cache=true/false
     * spring.resource.cache.cachecontrol.s-max-age=时间
+#### Spring 异常处理机制
+1. 核心接口
+    * HandlerExceptionResolver
+2. 实现类
+    * SimpleMappingExceptionResolver
+    * DefaultHandlerExceptionResolver
+    * ResponseStatusExceptionResolver
+    * ExceptionHandlerExceptionResolver
+3. 处理方法
+    * @ExceptionHandler
+4. 添加位置
+    * @Controller /@RestController
+    * @ControllerAdvice/ @RestControllerAdvice
+ 
+
+    
+
 
     
