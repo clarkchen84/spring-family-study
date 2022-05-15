@@ -756,6 +756,14 @@ spring.datasource.password=root
   ]
 }
 ```
+#### docker mysql
+* 官方指引
+    * https://hub.docker.com/_/mysql
+* 获取镜像
+    * docker pull mysql
+* 运行Mysql 镜像
+    * docker run  --name mysql -d -p 3306:3306 -v ~/docker-data/mysql:var/lib/mysql -e MYSQL_DATABASE=springbucks -e MYSQL_USER=springbucks -e MYSQL_PASSOWRD=springbucks -e MYSQL_ROOT_PASSWORD=root mysql 
+    * docker exec -it mysql bash  
 #### docker mongo
 1. docker pull mongo
 2. docker run --name mongo -p 27017:27017 -v ~/docker-data/mongo:/data/db -e MONGO_INITDB_ROOT_USERNAME=admin  -e MONGO_INITDB_ROOT_PASSWORD=admin -d mongo 
@@ -1534,7 +1542,23 @@ Redis 是一款开源的内存KV存储，支持多种数据结构
 4. 添加位置
     * @Controller /@RestController
     * @ControllerAdvice/ @RestControllerAdvice
- 
+#### Spring mvc 的拦截器
+1. 核心接口
+    * HandlerIntercetper
+        * boolean preHandler()
+        * void postHandler()
+        * void afterComplete()
+2. 针对@ResponseBody, @ResponseEntity
+    * ResponseBodyAdvice
+3. 针对异步请求的接口
+    * AsyncHandlerInterceptor
+        * void afterConcurrentHandlingStarted() 
+4. 拦截器的设置方式
+    1. 常规方法 
+        * WebMvcConfigurer.addInterceptor()
+    2. SpringBoot 中的配置
+        1. 创建一个 当有@Configuration的WebMvcConfigurer配置类
+        2. 不能带@EnableWebMvc（自己配置WebMvc）除外 
 
     
 

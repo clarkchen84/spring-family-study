@@ -36,6 +36,7 @@
         <module>thymeleaf-demo</module>
         <module>cache-thymeleaf-demo</module>
         <module>exception-demo</module>
+        <module>intercepter-demo</module>
     </modules>
     <packaging>pom</packaging>
     <properties>
