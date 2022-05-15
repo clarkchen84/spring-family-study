@@ -33,6 +33,7 @@
         <module>context-hierarchy-demo</module>
         <module>complex-controller-demo</module>
         <module>json-view-demo</module>
+        <module>thymeleaf-demo</module>
     </modules>
     <packaging>pom</packaging>
     <properties>

@@ -1497,4 +1497,17 @@ Redis 是一款开源的内存KV存储，支持多种数据结构
     1. 两种不同的重定向前缀
         * redirect
         * forward
+#### Thymeleaf 
+1. starter:`spring-boot-starter-thymeleaf`
+2. Springboot自动配置类：ThymeleafAutoConfiguration
+    * ThymeleafViewResolver 
+3. SpringBoot Thymeleaf 常用配置
+    1. spring.thymeleaf.cache=true
+    2. spring.thymeleaf.check-template-location=true
+    3. spring.thymeleaf.enabled=true
+    4. spring.thymeleaf.encoding=UTF-8
+    5. spring.thymeleaf.mode=HTML
+    6. spring.thymeleaf.servlet.content-type=text/html
+    7. spring.thymeleaf.prefix=classpath:/templates/
+    8. spring.thymeleaf.suffix=.html 
     
