@@ -69,7 +69,7 @@ public class CoffeeOrderController {
 
     }
 
-    @GetMapping(params = "/")
+    @GetMapping(path = "/")
     public ModelAndView showCreateForm(){
         return new ModelAndView("create-order-form");
     }

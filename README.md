@@ -1510,4 +1510,16 @@ Redis 是一款开源的内存KV存储，支持多种数据结构
     6. spring.thymeleaf.servlet.content-type=text/html
     7. spring.thymeleaf.prefix=classpath:/templates/
     8. spring.thymeleaf.suffix=.html 
+#### 静态资源与缓存
+1. 核心逻辑
+    * WebMvcConfigurer.addResourceHandlers()
+2. 常用配置
+    * spring.mvc.static-path-pattern=/**
+    * spring.resource.static-locations=classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/
+3. spring boot 缓存中的常用配置(默认时间都是秒 )
+    * ResourceProperties.Cache
+    * spring.resource.cache.cachecontrol.max-age=时间
+    * spring.resource.cache.cachecontrol.no-cache=true/false
+    * spring.resource.cache.cachecontrol.s-max-age=时间
+
     
