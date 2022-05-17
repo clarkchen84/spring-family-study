@@ -762,7 +762,7 @@ spring.datasource.password=root
 * 获取镜像
     * docker pull mysql
 * 运行Mysql 镜像
-    * docker run  --name mysql -d -p 3306:3306 -v ~/docker-data/mysql:var/lib/mysql -e MYSQL_DATABASE=springbucks -e MYSQL_USER=springbucks -e MYSQL_PASSOWRD=springbucks -e MYSQL_ROOT_PASSWORD=root mysql 
+    * docker run  --name mysql -d -p 3306:3306 -v ~/docker-data/mysql:/var/lib/mysql -e MYSQL_DATABASE=springbucks -e MYSQL_USER=springbucks -e MYSQL_PASSOWRD=springbucks -e MYSQL_ROOT_PASSWORD=root mysql 
     * docker exec -it mysql bash  
 #### docker mongo
 1. docker pull mongo
