@@ -19,7 +19,7 @@ create table t_order(
     primary key (id)
 );
 
-create t_order_coffee(
+create table t_order_coffee(
     coffee_order_id bigint not null,
     items_id bigint not null
 );

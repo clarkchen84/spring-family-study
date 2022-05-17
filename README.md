@@ -1559,6 +1559,37 @@ Redis 是一款开源的内存KV存储，支持多种数据结构
     2. SpringBoot 中的配置
         1. 创建一个 当有@Configuration的WebMvcConfigurer配置类
         2. 不能带@EnableWebMvc（自己配置WebMvc）除外 
+### 访问web资源
+#### Spring boot 中的RestTemplate
+1. Spring boot 中没有自动配置的RestTemplate
+2. Spring boot 提供了RestTemplateBuilder
+   1. RestTemplateBuilder.build() 
+3. RestTemplate 中的常用方法
+   1. Get请求
+      1. getForObject() 取得对象  /getForEntity() 取得Http响应
+      2. `String  result =restTemplate.getForObject("http://xxxx/{hotel}/xxxx/{booking}",String.class,"42","21");` 
+   2. Post请求
+      1. postForObject()/postForEntity()
+   3. Put请求
+      1. put()
+   4. Delete请求
+      1. delete()
+4. 构造URI
+   1. UriComponentsBuilder
+       ``` java 
+       Uri uri = UriCompomentBuilder.fromUriString("http://XXXXX/{hotel}").queryParam("q","{q}").encode()
+                .buildAndExpand("Westin","123").toUri(); 
+       Uri uri = UriCompomentBuilder.fromUriString("http://XXXXX/{hotel}?q={q}").
+                .build("Westin","123"); 
+       ```
+   2. 构造相当与当前求的URI
+      1. ServletUriComponentsBuilder
+   3. 构造指向Controller的URI
+      1. MvcUriComponentsBuilder 
+          ```` java 
+          UriComponents comp = MvcUriComponentsBuilder.fromMethodCall(on(XXXXController.class).getBooking(21)).buildAndExpand(42)
+            URI uri = comp.encode().toUri();
+          ````
 
     
 

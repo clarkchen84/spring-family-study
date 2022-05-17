@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import org.joda.money.CurrencyUnit;
 import org.joda.money.Money;
+import org.springframework.boot.jackson.JsonComponent;
 
 import java.io.IOException;
 
@@ -16,7 +17,7 @@ import java.io.IOException;
  * @Modified:
  * @Version:
  */
-
+@JsonComponent
 public class MoneyDeserializer extends StdDeserializer<Money> {
 
     protected MoneyDeserializer(){

@@ -1,9 +1,6 @@
 package sizhe.chen.model;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
 import org.joda.money.Money;
@@ -26,6 +23,8 @@ import java.io.Serializable;
 @Builder
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor
+@AllArgsConstructor
 public class Coffee extends BaseEntity implements Serializable {
     private String name;
     @Type(type="org.jadira.usertype.moneyandcurrency.joda.PersistentMoneyMinorAmount",
