@@ -38,6 +38,8 @@
         <module>exception-demo</module>
         <module>intercepter-demo</module>
         <module>simple-rest-template</module>
+        <module>complex-restTemplate-demo</module>
+        <module>advanced-rest-template-demo</module>
     </modules>
     <packaging>pom</packaging>
     <properties>
@@ -128,6 +130,11 @@
                 <groupId>com.fasterxml.jackson.dataformat</groupId>
                 <artifactId>jackson-dataformat-xml</artifactId>
                 <version>2.9.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>4.5.7</version>
             </dependency>
 <!--            <dependency>-->
 <!--                <groupId>io.projectreactor</groupId>-->

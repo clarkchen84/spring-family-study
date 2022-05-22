@@ -1590,8 +1590,80 @@ Redis 是一款开源的内存KV存储，支持多种数据结构
           UriComponents comp = MvcUriComponentsBuilder.fromMethodCall(on(XXXXController.class).getBooking(21)).buildAndExpand(42)
             URI uri = comp.encode().toUri();
           ````
+#### RestTemplate 的高阶用法
+1.  传递HttpHeader
+    * RestTemplate.exchange()
+    * RequestEntity<T>/Response<Entity> 
+    ``` java 
+        URI uri = UriComponentsBuilder.fromUriString("http://localhost:8080/coffee/?name={name}")
+                .build("mocha");
+        RequestEntity<Void> requestEntity = RequestEntity.get(uri).accept(MediaType.APPLICATION_XML).build();
 
-    
+        ResponseEntity<String> resp = template.exchange(requestEntity,String.class);
+        log.info("Response Status: {}, Response Headers: {}", resp.getStatusCode(), resp.getHeaders().toString());
+        log.info("Coffee: {}", resp.getBody());   
+    ```
+2. 类型转换
+    * JsonSerializer/JsonDeserializer
+    * @JsonComponent
+3. 解析范型
+    * RestTemplate.exchange()
+    * ParameterizedTypeReference<T>
+#### RestTemplate 支持的Http库
+* 通用接口
+    * ClientHttpRestFactory
+* 默认实现
+    * SimpleClientRestFactory， 默认使用的都是JDK内嵌的 这种URLConnection之类的一些支持，
+* Apache HttpComponents
+    * HttpComponentsClientHttpRequestFactory
+    ``` java 
+    @Bean
+    public HttpComponentsClientHttpRequestFactory factory(){
+        PoolingHttpClientConnectionManager manager = new PoolingHttpClientConnectionManager();
+        manager.setMaxTotal(200);
+        manager.setDefaultMaxPerRoute(20);
 
+        CloseableHttpClient httpClient = HttpClients.custom()
+                .evictIdleConnections(30, TimeUnit.SECONDS)
+                .setConnectionManager(manager)
+                .disableAutomaticRetries()
+                .setKeepAliveStrategy(new CustomConnectionKeepAliveStrategy())
+                .build();
+        HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
+        return factory;
+
+    }
+    @Bean
+    public RestTemplate restTemplate(RestTemplateBuilder builder){
+       return  builder.setConnectTimeout(Duration.ofMillis(100)).setReadTimeout(Duration.ofMillis(500))
+                .requestFactory(this::factory).build();
+    }
+    ```
+* Netty
+    * Netty4ClientHttpRequestFactory -> 建议使用HttpClient
+* OkHttp
+    * OkHttp3ClientHttpRequestFactory
+* 优化底层策略
+    * 连接管理
+        * PoolingHttpClientConnectionManager
+        * KeepAlive策略
+            ```` java 
+            public class CustomConnectionKeepAliveStrategy implements ConnectionKeepAliveStrategy {
+                  private final long KEEP_ALIVE_SECONDS = 30;
+                
+                  @Override
+                  public long getKeepAliveDuration(HttpResponse httpResponse, HttpContext httpContext) {
+                  return Arrays.asList(httpResponse.getHeaders(HTTP.CONN_KEEP_ALIVE))
+                  .stream().filter(h -> StringUtils.equalsIgnoreCase(h.getName(),"timeout"))
+                  .findFirst().map(h->NumberUtils.toLong(h.getValue(),KEEP_ALIVE_SECONDS))
+                  .orElse(KEEP_ALIVE_SECONDS) * 1000;
+                
+                  }
+            }
+            ````
+    * 超时设置
+        * connectTimeout/readTimeout
+    * SSL 校验
+        * 证书检查策略
 
     

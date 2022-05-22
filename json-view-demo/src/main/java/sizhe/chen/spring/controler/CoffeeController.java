@@ -42,7 +42,7 @@ public class CoffeeController {
         return coffeeService.saveCoffee(coffeeRequest.getName(), coffeeRequest.getPrice());
     }
 
-    @PostMapping(path = "/", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    @PostMapping(path = "/", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     @ResponseStatus(HttpStatus.CREATED)
     public Coffee addCoffeeWithOutBindingResult(@Valid @RequestBody NewCoffeeRequest coffeeRequest) {
